@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: yellow;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Add padding to containers */
+.container {
+  padding: 16px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Overwrite default styles of hr */
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* Set a style for the submit button */
+.registerbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 25%;
+  opacity: 0.9;
+}
+
+.registerbtn:hover {
+  opacity: 1;
+}
+
+/* Add a blue text color to links */
+a {
+  color: dodgerblue;
+}
+
+/* Set a grey background color and center the text of the "sign in" section */
+.signin {
+  background-color: #f1f1f1;
+  text-align: center;
+}
+</style>
+<script src="https://cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+    getList();//코멘트 게시판 목록 가져오기
+
+
+    CKEDITOR.replace( 'content' );        
+    //버튼을 누르면..
+    var bt = document.querySelector("button");
+    bt.addEventListener("click", function(){
+        regist();
+    });
+});
+
+function regist(){
+    var form = document.querySelector("#form1");
+
+    form.action="/board/regist";
+    form.method="post";
+    form.submit();
+}
+
+//댓글 등록 
+function reply(){
+    $.ajax({
+        url:"/board/comment/regist",
+        type:"post",
+        data:{ 
+            board_id:<%=board.board_id%>, 
+            msg:$("input[name='msg']").val(), 
+            cwriter:$("input[name='cwriter']").val() 
+        },
+        success:function(result){
+            //alert(result);
+            getList();
+        }
+    });
+}
+
+//댓글 리스트 동적 출력 
+function getList(){
+    //비동기로 데이터 가져오기 
+    $.ajax({
+        url:"/board/comment/list",
+        type:"get",
+        data:{
+            board_id:<%=board.board_id%>
+        }, 
+        success:function(str){
+            //console.log(str.commentListh);
+            var commentList = JSON.parse(str).commentList;
+            //console.log(commentList.length);
+            //원래는 객체화 시켜 출력해야 하지만, 피곤하므로 
+            //문자열로 출력하자!!
+            
+            var tag="";
+            tag +="<table width=\"100%\" border=\"1px\">";
+            tag +="<tr>";
+            tag +="<td width=\"60%\">제목</td>";
+            tag +="<td width=\"20%\">작성자</td>";
+            tag +="<td width=\"20%\">등록일</td>";
+            tag +="</tr>";
+                
+            var total = commentList.length;
+
+            for(var i=0;i<commentList.length;i++){
+                var json = commentList[i];
+                tag +="<tr>";
+                tag +="<td>"+json.msg+"</td>";
+                tag +="<td>"+json.cwriter+"</td>";
+                tag +="<td>"+json.cregdate.substring(0,10)+"</td>";
+                tag +="</tr>";
+            }
+            tag +="</table>";      
+            //div에 최종 출력 
+            document.querySelector("#commentArea").innerHTML=tag;
+        }
+
+    });
+
+    
+}
+
+</script>    
+</head>
+<body>
+
+<form id="form1">
+  <div class="container">
+    <input type="text" value="<%=board.title%>" name="title" required>
+    <input type="text" value="<%=board.writer%>" name="writer" required>
+    <textarea name="content"><%=board.content%></textarea>
+
+    <button type="button" class="registerbtn">수정하기</button>
+    <button type="button" class="registerbtn">삭제하기</button>
+    <button type="button" class="registerbtn">목록보기</button>
+  </div>
+</form>
+
+<div style="width:90%;background:pink;">
+        <form id="form2">
+            <input type="hidden" name="board_id" value="<%=board.board_id%>"/>
+            <input type="text" style="width:60%" name="msg" placeholder="내용입력"/>
+            <input type="text" style="width:20%" name="cwriter" placeholder="작성자명"/>
+        </form>
+        <button onClick="reply()">댓글등록</button>
+</div>
+
+<div id="commentArea"></div>
+
+
+</body>
+</html>
