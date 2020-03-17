@@ -150,6 +150,13 @@ function getList(){
     
 }
 
+function del(){
+    //board_id만 전송하면 되므로, get 이던 post던 상관없겟다..
+    if(confirm("삭제하시겠습니까?")){
+        location.href="/board/delete?board_id=<%=board.board_id%>";        
+    }
+}
+
 </script>    
 </head>
 <body>
@@ -160,9 +167,9 @@ function getList(){
     <input type="text" value="<%=board.writer%>" name="writer" required>
     <textarea name="content"><%=board.content%></textarea>
 
-    <button type="button" class="registerbtn">수정하기</button>
-    <button type="button" class="registerbtn">삭제하기</button>
-    <button type="button" class="registerbtn">목록보기</button>
+    <button type="button" class="registerbtn" onClick="edit()">수정하기</button>
+    <button type="button" class="registerbtn" onClick="del()">삭제하기</button>
+    <button type="button" class="registerbtn" onClick="location.href='/board/list';">목록보기</button>
   </div>
 </form>
 

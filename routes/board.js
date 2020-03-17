@@ -8,6 +8,27 @@ const conStr ={
   password:"1234",
   database:"ios"
 }
+//게시물 삭제 요청 처리 
+router.get("/delete", function(request, response){
+  var con = mysql.createConnection(conStr);
+  con.connect();
+  
+  var sql = "delete from board where board_id=?";  
+  con.query(sql, [request.query.board_id], function(err, result, fields){
+    //삭제에 성공하면, 코멘트도 지우자!!
+    //사실상 이 작업은 두개의 세부업무로 이루어진 트랜잭션 상황이다..
+    if(err){
+      console.log(err);
+    }else{
+      sql ="delete from comment where board_id=?";
+      con.query(sql, [ request.query.board_id], function(er, r, f){
+        response.redirect("/board/list"); 
+      });
+    }
+    con.end();
+  });
+
+});
 
 //코멘드 목록 요청 처리 
 router.get("/comment/list", function(request, response){
