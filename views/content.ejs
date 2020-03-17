@@ -71,14 +71,7 @@ a {
 <script>
 window.addEventListener("load", function(){
     getList();//코멘트 게시판 목록 가져오기
-
-
     CKEDITOR.replace( 'content' );        
-    //버튼을 누르면..
-    var bt = document.querySelector("button");
-    bt.addEventListener("click", function(){
-        regist();
-    });
 });
 
 function regist(){
@@ -150,6 +143,13 @@ function getList(){
     
 }
 
+function edit(){
+    var form1 = document.querySelector("#form1");
+    form1.action="/board/edit";
+    form1.method="post";
+    form1.submit();
+}
+
 function del(){
     //board_id만 전송하면 되므로, get 이던 post던 상관없겟다..
     if(confirm("삭제하시겠습니까?")){
@@ -163,6 +163,7 @@ function del(){
 
 <form id="form1">
   <div class="container">
+    <input type="hidden" name="board_id" value="<%=board.board_id%>"/>
     <input type="text" value="<%=board.title%>" name="title" required>
     <input type="text" value="<%=board.writer%>" name="writer" required>
     <textarea name="content"><%=board.content%></textarea>

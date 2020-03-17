@@ -8,6 +8,35 @@ const conStr ={
   password:"1234",
   database:"ios"
 }
+//게시물 수정 요청 처리 
+router.post("/edit", function(request, response){
+  
+  var con = mysql.createConnection(conStr);
+  con.connect();
+
+  var sql="update board set title=?, writer=?, content=?";
+  sql+=" where board_id=?";
+  
+  var title = request.body.title;
+  var writer = request.body.writer; 
+  var content = request.body.content; 
+  var board_id = request.body.board_id;
+
+  con.query(sql, [ title, writer, content, board_id ], function(err, result, fields){
+    if(err){
+      console.log(err);
+    }else{
+      response.render("content", {
+        board:request.body
+      });
+    }
+    con.end();
+  });
+
+
+
+});
+
 //게시물 삭제 요청 처리 
 router.get("/delete", function(request, response){
   var con = mysql.createConnection(conStr);

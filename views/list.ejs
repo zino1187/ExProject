@@ -31,14 +31,21 @@ tr:nth-child(even) {
     <th>조회수</th>
   </tr>
   <%for(var i=0;i<listArray.length;i++){%>    
-  <% var json = listArray[i];%>    
+  <% var json = listArray[i];%> 
+  <%
+  var dataObj = new Date(json.regdate);  
+  %>   
   <tr>
     <td>26</td>
     <td>
         <a href="/board/detail?board_id=<%=json.board_id%>"><%=json.title%> [ <%=json.cnt%> ] </a>
     </td>
     <td><%=json.writer%></td>
-    <td><%=json.regdate%></td>
+    <td>
+            <%=dataObj.getFullYear() %>-
+            <%=dataObj.getMonth()+1 %>-
+            <%=dataObj.getDate() %>
+    </td>
     <td><%=json.hit%></td>
   </tr>
   <%}%>
